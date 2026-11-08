@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Report a security vulnerability
-    url: https://github.com/ifaisal-swe/LogsTrace/security/advisories/new
+    url: https://github.com/ifaisal-swe/LogsTrace-dev/security/advisories/new
     about: Please report security issues privately.
   - name: Documentation
     url: https://docs.logstrace.dev

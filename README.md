@@ -26,7 +26,7 @@
   <img alt="ClickHouse" src="https://img.shields.io/badge/ClickHouse-26-FFCC01?logo=clickhouse&logoColor=black">
   <img alt="Drizzle ORM" src="https://img.shields.io/badge/Drizzle-ORM-C5F74F?logo=drizzle&logoColor=black">
   <img alt="Socket.IO" src="https://img.shields.io/badge/Socket.IO-live-010101?logo=socketdotio">
-  <a href="https://github.com/ifaisal-swe/LogsTrace/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/ifaisal-swe/LogsTrace/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/ifaisal-swe/LogsTrace-dev/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/ifaisal-swe/LogsTrace-dev/actions/workflows/ci.yml/badge.svg"></a>
 </p>
 
 <p align="center">
@@ -69,8 +69,8 @@ Any language that can make an HTTP request works. See the [API reference](docs/A
 Requirements: **Node 24**, **Docker**, Git.
 
 ```bash
-git clone https://github.com/ifaisal-swe/LogsTrace.git
-cd LogsTrace
+git clone https://github.com/ifaisal-swe/LogsTrace-dev.git
+cd LogsTrace-dev
 cp .env.example .env     # fill in the passwords (see below)
 npm install
 npm run db:up            # Postgres 18 on 127.0.0.1:5432

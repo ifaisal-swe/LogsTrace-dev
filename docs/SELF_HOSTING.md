@@ -14,8 +14,8 @@ Run your own instance on any Linux server with Docker. For local development see
 ## 1. Clone
 
 ```bash
-git clone https://github.com/ifaisal-swe/LogsTrace.git
-cd LogsTrace
+git clone https://github.com/ifaisal-swe/LogsTrace-dev.git
+cd LogsTrace-dev
 cp .env.example .env
 ```
 
