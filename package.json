@@ -22,27 +22,27 @@
     "ch:backfill": "node scripts/clickhouse-backfill.mjs"
   },
   "dependencies": {
-    "@clickhouse/client": "^1.24.0",
-    "@iconify-json/lucide": "^1.2.140",
+    "@clickhouse/client": "^1.25.0",
+    "@iconify-json/lucide": "^1.2.151",
     "@mastra/core": "^1.75.0",
     "@mastra/mcp": "^2.2.0",
-    "@nuxt/ui": "^4.11.3",
-    "drizzle-orm": "^0.45.3",
+    "@nuxt/ui": "^4.12.0",
+    "drizzle-orm": "^0.45.4",
     "engine.io": "^6.6.11",
     "nuxt": "4.5.2",
-    "nuxt-security": "^2.6.0",
+    "nuxt-security": "^2.7.0",
     "postgres": "^3.4.9",
     "socket.io": "^4.8.4",
     "socket.io-client": "^4.8.4",
     "uqr": "0.1.3",
-    "vue": "^3.5.43",
-    "vue-router": "^5.3.1",
+    "vue": "^3.5.45",
+    "vue-router": "^5.4.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/node": "^24.19.1",
     "drizzle-kit": "^0.31.11",
     "typescript": "5.9.3",
-    "vue-tsc": "^3.3.12"
+    "vue-tsc": "^3.3.14"
   }
 }
