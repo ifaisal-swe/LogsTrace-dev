@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directories: ["/", "/docs-site"]
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    # Nuxt and TypeScript are pinned on purpose (see CLAUDE.md); upgrade them by hand
+    ignore:
+      - dependency-name: nuxt
+      - dependency-name: "@nuxt/kit"
+      - dependency-name: "@nuxt/schema"
+      - dependency-name: "@nuxt/nitro-server"
+      - dependency-name: "@nuxt/vite-builder"
+      - dependency-name: nitropack
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: typescript
+        update-types: [version-update:semver-major, version-update:semver-minor]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
