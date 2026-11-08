@@ -1,0 +1,69 @@
+# LogsTrace
+
+> Logging for any app, service or script. Send JSON events to one endpoint; LogsTrace turns them into searchable tables (one per event type, one column per field), with filters, dashboards, alerts, tracing and an MCP server for AI assistants.
+
+This file is for AI assistants that add logging to a codebase or answer questions about LogsTrace. Full docs: https://docs.logstrace.dev/llms.txt (index) and https://docs.logstrace.dev/llms-full.txt (everything).
+
+## Send events
+
+- `POST https://logstrace.dev/api/ingest`, header `Authorization: Bearer lgk_...` (project key with "Send logs" access), `Content-Type: application/json`.
+- Body: one event, an array, or `{ "events": [...] }`. 1–500 events, ≤2 MB, 1,200 requests/min per key. Whole batch is accepted or rejected (400 names the bad event).
+- Response: `{ "accepted": N, "status": "ok" }`. Retry on 429/5xx/network errors; never retry a 400 unchanged.
+
+Recommended shape, a **structured event**:
+
+```json
+{ "channel": "orders", "event": "order.paid", "level": "info",
+  "orderId": "10293", "userId": "u_42", "amount": 49.90, "currency": "USD", "method": "card" }
+```
+
+- No `text` → every other top-level key becomes a column named after the key. Same `channel` + `event` + key set → same table (key order doesn't matter).
+- Envelope keys (not columns): `channel`, `event`, `level`, `ts`, `text`, `embed`, `data`, `traceId`, `spanId` and aliases `source`, `service`, `resource`, `message`, `msg`, `body`, `time`, `timestamp`, `@timestamp`, `severity`, `severityText`, `metadata`, `meta`, `attributes`, `trace_id`, `span_id`, `parentId`, `parent_id`. Never use them as field names.
+- `event`: ≤100 chars of `[A-Za-z0-9_.:-]`. `channel`: ≤100 chars. `level`: `debug|info|warn|error|fatal` (default `info`). `ts`: ISO 8601 or Unix s/ms (default: receive time).
+- ≤50 fields per event; nested objects become dotted columns (`user.id`); `data` (≤32 KB total) holds extra JSON that should not be a column (stack traces, payloads).
+- Plain messages also work: `{ "channel": "jobs", "text": "Job 551 finished in 1.82 s" }`. Columns are then guessed from the words that change.
+
+## How to instrument an app
+
+1. One small logger module: `log(channel, event, fields, level)` that queues events and flushes in the background every 1–5 s or at 100–500 events. Never block or throw into app code; drop the oldest events past a cap during outages.
+2. Keep the key in an environment variable / server-only config. Never ship it to browsers, mobile apps or game clients; log from the server side.
+3. Channels = areas of the system (`auth`, `orders`, `payments`, `jobs`, `admin`, `errors`). Not one per user or request.
+4. Event names = `<area>.<past_tense_action>` in snake_case: `user.signed_up`, `order.refunded`, `job.failed`.
+5. Same keys every time for one event. Send `null`, `""` or `0` instead of leaving a key out (a missing key starts a new table). camelCase keys, flat values.
+6. Ids and names as separate fields (`userId`, `userName`), amounts as numbers with a `currency` field, durations as `durationMs`, outcomes as `reason` / `status`.
+7. Levels: `info` normal actions, `warn` refused/suspicious/user-caused failures, `error` server failures, `fatal` data loss or outage.
+8. Add `traceId` (≤128 of `[A-Za-z0-9_.:-]`) to every event of one request or job to follow it across channels.
+9. Don't log secrets (passwords, tokens, API keys, card numbers). IPs and emails are masked for viewers but stored.
+10. Log state changes and actions, not every loop iteration or frame.
+
+## Use cases
+
+- **Audit trail:** who did what to whom (`admin.user_banned` with `adminId`, `targetId`, `reason`, `durationMinutes`). Filter by any column, export CSV.
+- **Money and balances:** every balance change as `economy.balance_changed` with `amount`, `balance`, `reason`; sum/avg per column, spot outliers.
+- **Purchases and orders:** `order.created`, `order.paid`, `order.refunded`; dashboards of revenue per method, alerts on refund spikes.
+- **Auth and security:** sign-ins, failed sign-ins (`warn`), permission denials, rate-limit hits; alert on volume.
+- **Background jobs:** `job.started` / `job.finished` / `job.failed` with `jobId`, `durationMs`, `attempt`; trace one job end to end.
+- **API requests:** method, route, status, `durationMs`; p95 panels, error-rate alerts.
+- **Errors:** `errors.<what_failed>` at `error` level with ids and a short message; stack traces in `data`.
+- **Product analytics:** feature usage events with user and plan fields, counted per day on dashboards.
+- **Multiplayer and realtime servers:** sessions, matches, rewards, moderation actions as structured events from the server process.
+- **Replacing chat/webhook logs:** keep existing chat or webhook notifications and send the same facts to LogsTrace as structured events, so they become searchable tables.
+
+## Read logs
+
+- REST: `GET https://logstrace.dev/api/v1/logs` with a key that has read access (`level`, `channel`, `q`, `data.<path>=value`, `trace`, `from`, `to`, `limit`, `cursor`). Trace: `GET /api/v1/logs/trace/:traceId`.
+- MCP: `https://logstrace.dev/api/mcp` with a read key; tools list tables and query/filter/summarise logs. Values are masked unless the key allows sensitive data.
+- Alerts: level, new-table and volume rules to Discord, Slack or a JSON webhook.
+
+## Docs
+
+- [Quickstart](https://docs.logstrace.dev/raw/guides/getting-started/quickstart.md)
+- [Use cases](https://docs.logstrace.dev/raw/guides/getting-started/use-cases.md)
+- [Event format](https://docs.logstrace.dev/raw/guides/sending-logs/events.md)
+- [Best practices](https://docs.logstrace.dev/raw/guides/sending-logs/best-practices.md)
+- [Batching](https://docs.logstrace.dev/raw/guides/sending-logs/batching.md)
+- [Tracing](https://docs.logstrace.dev/raw/guides/sending-logs/tracing.md)
+- [Ingest API](https://docs.logstrace.dev/raw/api-reference/endpoints/ingest.md)
+- [Query API](https://docs.logstrace.dev/raw/api-reference/endpoints/query-logs.md)
+- [MCP](https://docs.logstrace.dev/raw/guides/integrations/mcp.md)
+- [Masking](https://docs.logstrace.dev/raw/guides/teams/masking.md)

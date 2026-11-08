@@ -1,0 +1,4 @@
+Contact: mailto:security@logstrace.dev
+Expires: 2027-10-06T00:00:00.000Z
+Preferred-Languages: en, ar
+Canonical: https://logstrace.dev/.well-known/security.txt

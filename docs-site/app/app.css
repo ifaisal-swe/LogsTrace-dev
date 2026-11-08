@@ -1,0 +1,39 @@
+@theme static {
+  --font-sans: "Readex Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fragment Mono", ui-monospace, "Cascadia Mono", monospace;
+
+  --color-tide-50: #eef8f6;
+  --color-tide-100: #d3eee9;
+  --color-tide-200: #a8dcd3;
+  --color-tide-300: #74c3b7;
+  --color-tide-400: #3fa597;
+  --color-tide-500: #1e8b7e;
+  --color-tide-600: #0f7f73;
+  --color-tide-700: #0e655c;
+  --color-tide-800: #0f514b;
+  --color-tide-900: #0f433e;
+  --color-tide-950: #052a27;
+
+  --color-moss-50: #f8faf8;
+  --color-moss-100: #f1f4f1;
+  --color-moss-200: #e3e9e5;
+  --color-moss-300: #d3dbd7;
+  --color-moss-400: #a3afab;
+  --color-moss-500: #7a8783;
+  --color-moss-600: #5e6b68;
+  --color-moss-700: #46524f;
+  --color-moss-800: #2c3735;
+  --color-moss-900: #1c2725;
+  --color-moss-950: #15211f;
+}
+
+:root {
+  --ui-radius: 0.375rem;
+}
+
+.dark {
+  --ui-bg: var(--color-moss-950);
+  --ui-bg-muted: var(--color-moss-900);
+  --ui-bg-elevated: var(--color-moss-900);
+  --ui-border: var(--color-moss-800);
+}

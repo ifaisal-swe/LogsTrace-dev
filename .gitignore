@@ -1,0 +1,15 @@
+node_modules
+.nuxt
+.output
+.data
+.env
+.env.*
+!.env.example
+dist
+*.log
+.dev-accounts.md
+
+# Private notes and reports stay out of the public repo
+research_notes/
+reports/
+.claude/settings.local.json

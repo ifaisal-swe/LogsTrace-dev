@@ -1,0 +1,78 @@
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-logstrace}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-logstrace}
+    ports:
+      # Bound to localhost only; the app talks to it over the compose network in production
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # Postgres 18 images keep data under /var/lib/postgresql/<major>/docker
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.9
+    restart: unless-stopped
+    environment:
+      # Empty password limits the user to connections from inside the container, so set one in .env
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-logstrace}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    ports:
+      - "127.0.0.1:${CLICKHOUSE_PORT:-8123}:8123"
+    volumes:
+      - chdata:/var/lib/clickhouse
+    ulimits:
+      nofile: { soft: 262144, hard: 262144 }
+
+  app:
+    build: .
+    restart: unless-stopped
+    profiles: ["app"]
+    depends_on:
+      db:
+        condition: service_healthy
+      clickhouse:
+        condition: service_started
+    environment:
+      NUXT_DATABASE_URL: postgres://${POSTGRES_USER:-logstrace}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-logstrace}
+      NUXT_APP_URL: ${NUXT_APP_URL:-http://localhost:3000}
+      NUXT_BOOTSTRAP_ADMIN_EMAIL: ${NUXT_BOOTSTRAP_ADMIN_EMAIL:-}
+      NUXT_TRUSTED_IP_HEADER: ${NUXT_TRUSTED_IP_HEADER:-}
+      NUXT_OWNER_EMAILS: ${NUXT_OWNER_EMAILS:-}
+      NUXT_REQUIRE_EMAIL_VERIFICATION: ${NUXT_REQUIRE_EMAIL_VERIFICATION:-true}
+      NUXT_PUBLIC_REGISTRATION: ${NUXT_PUBLIC_REGISTRATION:-open}
+      NUXT_RESEND_API_KEY: ${NUXT_RESEND_API_KEY:-}
+      NUXT_MAIL_FROM: ${NUXT_MAIL_FROM:-LogsTrace <no-reply@logstrace.dev>}
+      NUXT_MAIL_REPLY_TO: ${NUXT_MAIL_REPLY_TO:-}
+      NUXT_SECRET_KEY: ${NUXT_SECRET_KEY:-}
+      NUXT_PLATFORM_WEBHOOK_URL: ${NUXT_PLATFORM_WEBHOOK_URL:-}
+      NUXT_PLATFORM_WEBHOOK_EVENTS: ${NUXT_PLATFORM_WEBHOOK_EVENTS:-}
+      NUXT_PLATFORM_WEBHOOK_SHOW_EMAILS: ${NUXT_PLATFORM_WEBHOOK_SHOW_EMAILS:-false}
+      NUXT_SUPPORT_INBOUND_ADDRESS: ${NUXT_SUPPORT_INBOUND_ADDRESS:-}
+      NUXT_RESEND_WEBHOOK_SECRET: ${NUXT_RESEND_WEBHOOK_SECRET:-}
+      NUXT_SUPPORT_AUTO_CLOSE_DAYS: ${NUXT_SUPPORT_AUTO_CLOSE_DAYS:-7}
+      NUXT_OPENROUTER_API_KEY: ${NUXT_OPENROUTER_API_KEY:-}
+      NUXT_AI_MODEL: ${NUXT_AI_MODEL:-deepseek/deepseek-v4.1-flash}
+      NUXT_AI_FALLBACK_MODEL: ${NUXT_AI_FALLBACK_MODEL:-deepseek/deepseek-v4-flash}
+      NUXT_MCP_ENABLED: ${NUXT_MCP_ENABLED:-true}
+      # Bundled ClickHouse; change this line to use an external one
+      NUXT_CLICKHOUSE_URL: http://clickhouse:8123
+      NUXT_CLICKHOUSE_USER: ${NUXT_CLICKHOUSE_USER:-${CLICKHOUSE_USER:-logstrace}}
+      NUXT_CLICKHOUSE_PASSWORD: ${NUXT_CLICKHOUSE_PASSWORD:-${CLICKHOUSE_PASSWORD:-}}
+      NUXT_CLICKHOUSE_DATABASE: ${NUXT_CLICKHOUSE_DATABASE:-logstrace}
+    ports:
+      # Put a TLS reverse proxy (Caddy, nginx) in front; secure cookies and HSTS need HTTPS
+      - "127.0.0.1:3000:3000"
+
+volumes:
+  pgdata:
+  chdata:

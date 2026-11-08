@@ -1,0 +1,119 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  --font-sans: "Readex Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fragment Mono", ui-monospace, "Cascadia Mono", monospace;
+
+  /* Primary: tide (teal). Also the colour for extracted identifiers. */
+  --color-tide-50: #eef8f6;
+  --color-tide-100: #d3eee9;
+  --color-tide-200: #a8dcd3;
+  --color-tide-300: #74c3b7;
+  --color-tide-400: #3fa597;
+  --color-tide-500: #1e8b7e;
+  --color-tide-600: #0f7f73;
+  --color-tide-700: #0e655c;
+  --color-tide-800: #0f514b;
+  --color-tide-900: #0f433e;
+  --color-tide-950: #052a27;
+
+  /* Neutral: moss (sage-tinted greys) */
+  --color-moss-50: #f8faf8;
+  --color-moss-100: #f1f4f1;
+  --color-moss-200: #e3e9e5;
+  --color-moss-300: #d3dbd7;
+  --color-moss-400: #a3afab;
+  --color-moss-500: #7a8783;
+  --color-moss-600: #5e6b68;
+  --color-moss-700: #46524f;
+  --color-moss-800: #2c3735;
+  --color-moss-900: #1c2725;
+  --color-moss-950: #15211f;
+
+  /* Extracted value types: the same three colours everywhere a value is pulled out of a log */
+  --color-field-number: #b9770c;
+  --color-field-id: #0f7f73;
+  --color-field-text: #5b45c9;
+}
+
+:root {
+  --ui-radius: 0.375rem;
+  --ui-bg: var(--color-moss-100);
+  --ui-bg-muted: var(--color-moss-50);
+  --ui-bg-elevated: #fbfcfb;
+  --ui-text: var(--color-moss-950);
+  --ui-text-muted: var(--color-moss-600);
+  --ui-border: var(--color-moss-300);
+  /* Chart series, validated for colour-vision deficiency; order matters */
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-5: #e87ba4;
+  --chart-other: var(--color-moss-400);
+  --chart-single: var(--color-tide-500);
+  --chart-fatal: #8b1e1e;
+  --chart-error: #e34948;
+  --chart-warn: #eda100;
+  --chart-info: var(--color-tide-400);
+  --chart-debug: var(--color-moss-400);
+  --chart-grid: var(--color-moss-200);
+}
+
+.dark {
+  --ui-bg: var(--color-moss-950);
+  --ui-bg-muted: var(--color-moss-900);
+  --ui-bg-elevated: var(--color-moss-900);
+  --ui-text: var(--color-moss-100);
+  --ui-text-muted: var(--color-moss-400);
+  --ui-border: var(--color-moss-800);
+  --color-field-number: #e6a73a;
+  --color-field-text: #9a8af0;
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
+  --chart-other: var(--color-moss-600);
+  --chart-single: var(--color-tide-400);
+  --chart-fatal: #b23a3a;
+  --chart-error: #e66767;
+  --chart-warn: #c98500;
+  --chart-info: var(--color-tide-500);
+  --chart-debug: var(--color-moss-600);
+  --chart-grid: var(--color-moss-800);
+}
+
+html {
+  font-feature-settings: "ss01";
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--ui-bg);
+  color: var(--ui-text);
+}
+
+.log-line {
+  /* Arabic glyphs fall through to Readex Pro (Fragment Mono has none) */
+  font-family: var(--font-mono), "Readex Pro", sans-serif;
+  unicode-bidi: plaintext;
+}
+
+.field-number { color: var(--color-field-number); }
+.field-id { color: var(--color-field-id); }
+.field-text { color: var(--color-field-text); }
+
+/* Rows that just arrived over the live connection */
+.row-new { animation: row-arrive 2.5s ease-out; }
+@keyframes row-arrive {
+  from { background: var(--color-tide-100); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
