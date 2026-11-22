@@ -12,7 +12,7 @@
     "preview": "nuxt preview"
   },
   "dependencies": {
-    "docus": "5.14.0",
+    "docus": "5.15.0",
     "nuxt": "4.5.2"
   }
 }
